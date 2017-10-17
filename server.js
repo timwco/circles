@@ -5,15 +5,18 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const socketio = require('socket.io');
+const pgp = require('pg-promise')()
 
+// Set up App
 const app = express();
 const server = require('http').Server(app);
 const io = socketio(server);
 
-// view engine setup
+// Configure View Settings
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// Basic App Settings
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -22,8 +25,24 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+let board = require('./board');
+
+// Database Connection
+const db = pgp('postgres://Tim@localhost:5432/circles');
+db.one('SELECT * from Game')
+  .then(function (data) {
+    console.log('DATA:', data.value)
+  })
+  .catch(function (error) {
+    console.log('ERROR:', error)
+    
+  })
+
 // Index Route
-app.get('/', (req, res) => res.render('index'))
+app.get('/', (req, res) => {
+  res.render('index')
+
+})
 
 // Set Up Connection
 io.on('connection', (socket) => {

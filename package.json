@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
@@ -11,10 +11,10 @@
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "morgan": "~1.8.1",
+    "pg-promise": "^7.0.2",
     "pug": "~2.0.0-beta11",
     "serve-favicon": "~2.4.2",
-    "socket.io": "^2.0.3",
-    "sqlite3": "^3.1.13"
+    "socket.io": "^2.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -23,6 +23,7 @@
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "konva": "^1.7.2",
+    "nodemon": "^1.12.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-konva": "^1.1.5",
