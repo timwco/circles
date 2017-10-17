@@ -5,15 +5,4 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     block content
-
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
-    script.
-        var socket = io();
-        var el = document.getElementById('server-time');
-        console.log(socket);
-        console.log(el);
-        socket.on('time', function(timeString) {
-          console.log('TIME')
-          el.innerHTML = 'Server time: ' + timeString;
-        });
-
+    script(src='/javascripts/bundle.js')

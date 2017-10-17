@@ -6,3 +6,13 @@ body {
 a {
   color: #00B7FF;
 }
+
+.circle {
+  background-color: rgba(222, 220, 222, 1.000);
+  width: 15px;
+  height: 15px;
+  border-radius: 50em;
+  display: inline-block;
+  margin: 0 5px 5px 0;
+  cursor: pointer;
+}
