@@ -5,7 +5,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const socketio = require('socket.io');
-const pgp = require('pg-promise')()
+// const pgp = require('pg-promise')()
 
 // Set up App
 const app = express();
@@ -25,32 +25,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-let board = require('./board');
+// Generate Board
+let newBoard = require('./board');
+let board;
 
-// Database Connection
-const db = pgp('postgres://Tim@localhost:5432/circles');
-db.one('SELECT * from Game')
-  .then(function (data) {
-    console.log('DATA:', data.value)
-  })
-  .catch(function (error) {
-    console.log('ERROR:', error)
-    
-  })
+// Any Route
+app.get('*', (req, res) => res.render('index'));
 
-// Index Route
-app.get('/', (req, res) => {
-  res.render('index')
-
-})
-
-// Set Up Connection
+// Set Up Socket Connection
 io.on('connection', (socket) => {
-  console.log('Client connected');
+  board = (board !== undefined) ? board : newBoard;
+  console.log('>------ Client connected, BOARD ID:', board.id);
+  io.emit('time', new Date().toTimeString());
+  io.emit('board', board);
   socket.on('disconnect', () => console.log('Client disconnected'));
 });
-
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
