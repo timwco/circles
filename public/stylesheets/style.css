@@ -8,7 +8,6 @@ a {
 }
 
 .circle {
-  background-color: rgba(222, 220, 222, 1.000);
   width: 15px;
   height: 15px;
   border-radius: 50em;
@@ -16,3 +15,6 @@ a {
   margin: 0 5px 5px 0;
   cursor: pointer;
 }
+.circle-default { background-color: rgba(222, 220, 222, 1.000); }
+.circle-mine { background-color: rgba(40, 100, 153, 1.000); }
+.circle-taken { background-color: rgba(96, 192, 219, 1.000); }

@@ -9,7 +9,7 @@ class App extends React.Component {
 
   constructor () {
     super();
-    // updateTime((timestamp) => this.setState({ timestamp }));
+    updateTime((timestamp) => this.setState({ timestamp }));
   }
 
   render () {
