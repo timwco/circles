@@ -11,4 +11,11 @@ function updateBoard (board) {
   socket.emit('updateBoard', board);
 }
 
-export { getBoard, updateBoard };
+function boardUpdated (cb) {
+  socket.on('boardUpdated', board => {
+    cb(board);
+    console.log('Board has been updated');
+  });
+}
+
+export { getBoard, updateBoard, boardUpdated };

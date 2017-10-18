@@ -27613,21 +27613,23 @@ class Board extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
   constructor() {
     super();
     this.state = { board: {} };
-    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["a" /* getBoard */])(board => this.setState({ board }));
+    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["b" /* getBoard */])(board => this.setState({ board }));
+    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["a" /* boardUpdated */])(board => {
+      this.setState({ board });
+      console.log(this.state.board);
+      this.forceUpdate();
+    });
   }
 
   alterBoard(card) {
-    console.log('Board has been updated!!');
-    console.log(card);
     let elem = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.find(this.state.board.display, { id: card.state.id });
-    elem.user = 'Tim';
-    console.log(this.state.board.display);
-    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["b" /* updateBoard */])(this.state.board);
+    elem.user = card.state.user;
+    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["c" /* updateBoard */])(this.state.board);
   }
 
-  renderCircles(board) {
-    if (board.display !== undefined) {
-      return board.display.map(item => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__circle__["a" /* Circle */], { key: item.id, cData: item, action: this.alterBoard.bind(this) }));
+  renderCircles() {
+    if (this.state.board.display !== undefined) {
+      return this.state.board.display.map(item => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__circle__["a" /* Circle */], { key: item.id, data: item, action: this.alterBoard.bind(this) }));
     }
   }
 
@@ -27653,22 +27655,44 @@ class Board extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 
 
+const currentUser = 'tim';
+
 class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
   constructor(props) {
     super(props);
-    this.state = { id: 0, taken: false, mine: false, cName: 'circle circle-default' };
-    this.state.taken = this.props.cData.user ? true : false;
-    this.state.id = this.props.cData.id;
+    this.state = {};
+  }
+
+  componentDidMount() {
+    this.state.user = this.props.data.user;
+    this.state.id = this.props.data.id;
+    this.setClass();
+  }
+
+  setClass() {
+    if (!this.state.user) {
+      this.setState({ cName: 'circle circle-default' });
+    } else if (this.state.user === currentUser) {
+      this.setState({ cName: 'circle circle-mine' });
+    } else {
+      this.setState({ cName: 'circle circle-taken' });
+    }
   }
 
   toggle() {
-    if (this.state.mine) {
-      this.setState({ cName: 'circle circle-default', mine: false });
-    } else if (!this.state.taken) {
-      this.setState({ cName: 'circle circle-mine', mine: true });
+    let newUser;
+
+    if (this.state.user === currentUser) {
+      newUser = '';
+    } else if (!this.state.user) {
+      newUser = currentUser;
     }
-    this.props.action(this); // Update board
+
+    this.setState({ user: newUser }, () => {
+      this.setClass(this.state.user);
+      this.props.action(this); // Update board
+    });
   }
 
   render() {
@@ -27686,8 +27710,9 @@ class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getBoard; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return updateBoard; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return getBoard; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return updateBoard; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return boardUpdated; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client__ = __webpack_require__(55);
@@ -27703,6 +27728,13 @@ function getBoard(cb) {
 
 function updateBoard(board) {
   socket.emit('updateBoard', board);
+}
+
+function boardUpdated(cb) {
+  socket.on('boardUpdated', board => {
+    cb(board);
+    console.log('Board has been updated');
+  });
 }
 
 

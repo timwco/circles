@@ -27,20 +27,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Generate Board
 let newBoard = require('./board');
-let board;
+let currentBoard;
 
 // Any Route
 app.get('*', (req, res) => res.render('index'));
 
 // Set Up Socket Connection
 io.on('connection', (socket) => {
-  board = (board !== undefined) ? board : newBoard;
-  console.log('>------ Client connected, BOARD ID:', board.id);
-  io.emit('board', board);
+  currentBoard = (currentBoard !== undefined) ? currentBoard : newBoard;
+  console.log('>------ Client connected, BOARD ID:', currentBoard.id);
+  io.emit('board', currentBoard);
   socket.on('updateBoard', board => {
     console.log('=======================================')
     console.log(board)
     console.log('=======================================')
+    io.emit('boardUpdated', board);
+    currentBoard = board;
   })
   socket.on('disconnect', () => console.log('Client disconnected'));
 });

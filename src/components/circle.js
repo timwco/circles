@@ -1,22 +1,44 @@
 import React from 'react';
 
+const currentUser = 'tim';
+
 class Circle extends React.Component {
 
-  state = { id: 0, taken: false, mine: false, cName: 'circle circle-default' }
+  state = {}
 
   constructor (props) {
     super(props);
-    this.state.taken = this.props.cData.user ? true : false;
-    this.state.id = this.props.cData.id;
+  }
+
+  componentDidMount () {
+    this.state.user = this.props.data.user;
+    this.state.id = this.props.data.id;
+    this.setClass();
+  }
+
+  setClass () {
+    if (!this.state.user) {
+      this.setState({ cName: 'circle circle-default' });
+    } else if (this.state.user === currentUser) {
+      this.setState({ cName: 'circle circle-mine' });
+    } else {
+      this.setState({ cName: 'circle circle-taken' });
+    }
   }
 
   toggle () {
-    if (this.state.mine) {
-      this.setState({ cName: 'circle circle-default', mine: false });
-    } else if (!this.state.taken){
-      this.setState({ cName: 'circle circle-mine', mine: true });
-    }
-    this.props.action(this); // Update board
+    let newUser;
+
+    if (this.state.user === currentUser) {
+      newUser = '';
+    } else if (!this.state.user) {
+      newUser = currentUser;
+    } 
+
+    this.setState({ user: newUser }, () => {
+      this.setClass(this.state.user);
+      this.props.action(this); // Update board
+    })
   }
 
   render () {
