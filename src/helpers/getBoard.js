@@ -11,4 +11,8 @@ function updateBoard (board) {
   socket.emit('updateBoard', board);
 }
 
-export { getBoard, updateBoard };
+function getUserId (cb) {
+  socket.on('userId', userId => cb(userId));
+}
+
+export { getBoard, updateBoard, getUserId };

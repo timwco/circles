@@ -1,7 +1,5 @@
 import React from 'react';
 
-const currentUser = 'tim';
-
 class Circle extends React.Component {
 
   state = {}
@@ -17,12 +15,13 @@ class Circle extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({ user: nextProps.data.user });
+    this.setState({ currentUser: nextProps.currentUser });
   }
 
   getClass () {
     if (!this.state.user) {
       return 'circle circle-default';
-    } else if (this.state.user === currentUser) {
+    } else if (this.state.user === this.state.currentUser) {
       return 'circle circle-mine';
     } else {
       return 'circle circle-taken';
@@ -30,16 +29,21 @@ class Circle extends React.Component {
   }
 
   toggle () {
-    let newUser;
+    let newUser, count;
 
-    if (this.state.user === currentUser) {
+    if (this.state.user === this.state.currentUser) {
       newUser = '';
-    } else if (!this.state.user) {
-      newUser = currentUser;
-    } 
+      count = -1;
+    } else if (this.state.user && this.state.user !== this.state.currentUser) {
+      newUser = this.state.user;
+      count = 0;
+    } else {
+      newUser = this.state.currentUser;
+      count = 1;
+    }
 
     this.setState({ user: newUser }, () => {
-      this.props.action(this); // Update board
+      this.props.action(this, count); // Update board
     })
   }
 

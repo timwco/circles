@@ -34,8 +34,10 @@ app.get('*', (req, res) => res.render('index'));
 
 // Set Up Socket Connection
 io.on('connection', (socket) => {
+  console.log('>------------- SOCKET ID', socket.id);
   currentBoard = (currentBoard !== undefined) ? currentBoard : newBoard;
   console.log('>------ Client connected, BOARD ID:', currentBoard.id);
+  io.emit('userId', socket.id);
   io.emit('board', currentBoard);
   socket.on('updateBoard', board => {
     console.log('=======================================')
