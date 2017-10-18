@@ -16,19 +16,25 @@ class Board extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.loadData(nextProps.io);
+    console.log(nextProps);
+    this.loadData(nextProps.io, nextProps.board);
   }
 
-  loadData(io) {
+  loadData(io, board) {
     let prevUser = cookie.load('circles-user');
     let prevPlays = cookie.load('circles-count');
-    if (prevUser && prevPlays) {
+    let prevGame = Number(cookie.load('circles-game'));
+
+    if (prevGame && prevGame === board.id){
       this.setState({ userId: prevUser, plays: Number(prevPlays) });
     } else {
+      cookie.save('circles-game', board.id, { path: '/' })
       cookie.save('circles-user', io, { path: '/' })
       cookie.save('circles-count', 0, { path: '/' })
       this.setState({ userId: io });
     }
+
+    this.setState({ board });
   } 
 
   updatePlays (count) {

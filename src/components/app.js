@@ -1,15 +1,15 @@
 import React from 'react';
 
-import { getUserId } from '../helpers/getBoard';
+import { loadGame } from '../helpers/getBoard';
 import { Board } from './board';
 
 class App extends React.Component {
 
-  state = { io: null };
+  state = { io: null, board: {} };
 
   constructor () {
     super();
-    getUserId(ioId => this.setState({ io: ioId }));
+    loadGame(data => this.setState({ io: data.gameId, board: data.board }));
   }
 
   render () {
@@ -17,7 +17,7 @@ class App extends React.Component {
       <div className="circles-app">
         <h1>Welcome to Circles</h1>
         <hr />
-        <Board io={ this.state.io } />
+        <Board io={ this.state.io } board={ this.state.board } />
       </div>
     );
   }

@@ -24465,8 +24465,8 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
   constructor() {
     super();
-    this.state = { io: null };
-    Object(__WEBPACK_IMPORTED_MODULE_1__helpers_getBoard__["b" /* getUserId */])(ioId => this.setState({ io: ioId }));
+    this.state = { io: null, board: {} };
+    Object(__WEBPACK_IMPORTED_MODULE_1__helpers_getBoard__["b" /* loadGame */])(data => this.setState({ io: data.gameId, board: data.board }));
   }
 
   render() {
@@ -24479,7 +24479,7 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         'Welcome to Circles'
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('hr', null),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__board__["a" /* Board */], { io: this.state.io })
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__board__["a" /* Board */], { io: this.state.io, board: this.state.board })
     );
   }
 
@@ -27631,19 +27631,25 @@ class Board extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.loadData(nextProps.io);
+    console.log(nextProps);
+    this.loadData(nextProps.io, nextProps.board);
   }
 
-  loadData(io) {
+  loadData(io, board) {
     let prevUser = __WEBPACK_IMPORTED_MODULE_1_react_cookies___default.a.load('circles-user');
     let prevPlays = __WEBPACK_IMPORTED_MODULE_1_react_cookies___default.a.load('circles-count');
-    if (prevUser && prevPlays) {
+    let prevGame = Number(__WEBPACK_IMPORTED_MODULE_1_react_cookies___default.a.load('circles-game'));
+
+    if (prevGame && prevGame === board.id) {
       this.setState({ userId: prevUser, plays: Number(prevPlays) });
     } else {
+      __WEBPACK_IMPORTED_MODULE_1_react_cookies___default.a.save('circles-game', board.id, { path: '/' });
       __WEBPACK_IMPORTED_MODULE_1_react_cookies___default.a.save('circles-user', io, { path: '/' });
       __WEBPACK_IMPORTED_MODULE_1_react_cookies___default.a.save('circles-count', 0, { path: '/' });
       this.setState({ userId: io });
     }
+
+    this.setState({ board });
   }
 
   updatePlays(count) {
@@ -27757,9 +27763,9 @@ class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return loadGame; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getBoard; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return updateBoard; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return getUserId; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client__ = __webpack_require__(55);
@@ -27769,16 +27775,16 @@ class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
 const socket = __WEBPACK_IMPORTED_MODULE_1_socket_io_client___default()();
 
+function loadGame(cb) {
+  socket.on('game', data => cb(data));
+}
+
 function getBoard(cb) {
   socket.on('board', board => cb(board));
 }
 
 function updateBoard(board) {
   socket.emit('updateBoard', board);
-}
-
-function getUserId(cb) {
-  socket.on('userId', userId => cb(userId));
 }
 
 
