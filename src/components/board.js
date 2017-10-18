@@ -1,6 +1,6 @@
 import React from 'react';
 import { Circle } from './circle';
-import { getBoard, updateBoard, boardUpdated } from '../helpers/getBoard';
+import { getBoard, updateBoard } from '../helpers/getBoard';
 import _ from 'lodash';
 
 class Board extends React.Component {
@@ -10,11 +10,6 @@ class Board extends React.Component {
   constructor () {
     super();
     getBoard(board => this.setState({ board }));
-    boardUpdated(board => {
-      this.setState({ board })
-      console.log(this.state.board);
-      this.forceUpdate();
-    });
   }
 
   alterBoard (card) {
@@ -25,14 +20,18 @@ class Board extends React.Component {
 
   renderCircles () {
     if (this.state.board.display !== undefined ){
-      return this.state.board.display.map( item => <Circle key={item.id} data={item} action={this.alterBoard.bind(this)} />)
+      console.log(this.state.board.display.map( item => item.user ));
+      return this.state.board.display.map( item => {
+        console.log(item);
+        return <Circle key={item.id} data={item} action={this.alterBoard.bind(this)} />
+      })
     }
   }
 
   render () {
     return (
       <div className="board">
-        { this.renderCircles(this.state.board) }
+        { this.renderCircles() }
       </div>
     );
   }

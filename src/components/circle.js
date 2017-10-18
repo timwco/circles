@@ -13,16 +13,19 @@ class Circle extends React.Component {
   componentDidMount () {
     this.state.user = this.props.data.user;
     this.state.id = this.props.data.id;
-    this.setClass();
   }
 
-  setClass () {
+  componentWillReceiveProps(nextProps) {
+    this.setState({ user: nextProps.data.user });
+  }
+
+  getClass () {
     if (!this.state.user) {
-      this.setState({ cName: 'circle circle-default' });
+      return 'circle circle-default';
     } else if (this.state.user === currentUser) {
-      this.setState({ cName: 'circle circle-mine' });
+      return 'circle circle-mine';
     } else {
-      this.setState({ cName: 'circle circle-taken' });
+      return 'circle circle-taken';
     }
   }
 
@@ -36,7 +39,6 @@ class Circle extends React.Component {
     } 
 
     this.setState({ user: newUser }, () => {
-      this.setClass(this.state.user);
       this.props.action(this); // Update board
     })
   }
@@ -44,7 +46,7 @@ class Circle extends React.Component {
   render () {
     return (
       <div
-        className={ this.state.cName }
+        className={ this.getClass() }
         onClick={ this.toggle.bind(this) }>
       </div>
     );

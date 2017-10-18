@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
     console.log('=======================================')
     console.log(board)
     console.log('=======================================')
-    io.emit('boardUpdated', board);
+    io.emit('board', board);
     currentBoard = board;
   })
   socket.on('disconnect', () => console.log('Client disconnected'));

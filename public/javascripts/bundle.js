@@ -27613,23 +27613,22 @@ class Board extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
   constructor() {
     super();
     this.state = { board: {} };
-    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["b" /* getBoard */])(board => this.setState({ board }));
-    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["a" /* boardUpdated */])(board => {
-      this.setState({ board });
-      console.log(this.state.board);
-      this.forceUpdate();
-    });
+    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["a" /* getBoard */])(board => this.setState({ board }));
   }
 
   alterBoard(card) {
     let elem = __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.find(this.state.board.display, { id: card.state.id });
     elem.user = card.state.user;
-    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["c" /* updateBoard */])(this.state.board);
+    Object(__WEBPACK_IMPORTED_MODULE_2__helpers_getBoard__["b" /* updateBoard */])(this.state.board);
   }
 
   renderCircles() {
     if (this.state.board.display !== undefined) {
-      return this.state.board.display.map(item => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__circle__["a" /* Circle */], { key: item.id, data: item, action: this.alterBoard.bind(this) }));
+      console.log(this.state.board.display.map(item => item.user));
+      return this.state.board.display.map(item => {
+        console.log(item);
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__circle__["a" /* Circle */], { key: item.id, data: item, action: this.alterBoard.bind(this) });
+      });
     }
   }
 
@@ -27637,7 +27636,7 @@ class Board extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'board' },
-      this.renderCircles(this.state.board)
+      this.renderCircles()
     );
   }
 
@@ -27667,16 +27666,19 @@ class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
   componentDidMount() {
     this.state.user = this.props.data.user;
     this.state.id = this.props.data.id;
-    this.setClass();
   }
 
-  setClass() {
+  componentWillReceiveProps(nextProps) {
+    this.setState({ user: nextProps.data.user });
+  }
+
+  getClass() {
     if (!this.state.user) {
-      this.setState({ cName: 'circle circle-default' });
+      return 'circle circle-default';
     } else if (this.state.user === currentUser) {
-      this.setState({ cName: 'circle circle-mine' });
+      return 'circle circle-mine';
     } else {
-      this.setState({ cName: 'circle circle-taken' });
+      return 'circle circle-taken';
     }
   }
 
@@ -27690,14 +27692,13 @@ class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     }
 
     this.setState({ user: newUser }, () => {
-      this.setClass(this.state.user);
       this.props.action(this); // Update board
     });
   }
 
   render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', {
-      className: this.state.cName,
+      className: this.getClass(),
       onClick: this.toggle.bind(this) });
   }
 
@@ -27710,9 +27711,8 @@ class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return getBoard; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return updateBoard; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return boardUpdated; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getBoard; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return updateBoard; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client__ = __webpack_require__(55);
@@ -27728,13 +27728,6 @@ function getBoard(cb) {
 
 function updateBoard(board) {
   socket.emit('updateBoard', board);
-}
-
-function boardUpdated(cb) {
-  socket.on('boardUpdated', board => {
-    cb(board);
-    console.log('Board has been updated');
-  });
 }
 
 
