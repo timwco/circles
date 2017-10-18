@@ -11,8 +11,8 @@ function getBoard (cb) {
   socket.on('board', board => cb(board));
 }
 
-function updateBoard (board) {
-  socket.emit('updateBoard', board);
+function sendBoard (board) {
+  socket.emit('sendBoard', board);
 }
 
-export { loadGame, getBoard, updateBoard };
+export { loadGame, getBoard, sendBoard };

@@ -32,13 +32,13 @@ let currentBoard;
 // Any Route
 app.get('*', (req, res) => res.render('index'));
 
-// Set Up Socket Connection
+// Set Up Socket Connection & Listens and Broadcasts
 io.on('connection', (socket) => {
   console.log('>------------- SOCKET ID', socket.id);
   currentBoard = (currentBoard !== undefined) ? currentBoard : newBoard;
   console.log('>------ Client connected, BOARD ID:', currentBoard.id);
   io.emit('game', { board: currentBoard, gameId: socket.id });
-  socket.on('updateBoard', board => {
+  socket.on('sendBoard', board => {
     console.log('=======================================')
     console.log(board)
     console.log('=======================================')

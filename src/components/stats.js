@@ -10,7 +10,7 @@ class Stats extends React.Component {
     return (
       <div className="circles-stats">
         <p>User: { this.props.data.userId }</p>
-        <p className="play-count">{ this.props.data.plays }</p>
+        <p className="play-count">Remaining Plays: { this.props.data.plays }</p>
       </div>
     );
   }

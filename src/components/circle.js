@@ -8,7 +8,8 @@ class Circle extends React.Component {
     super(props);
   }
 
-  componentDidMount () {
+  componentWillMount() {
+    this.state.currentUser = this.props.currentUser;
     this.state.user = this.props.data.user;
     this.state.id = this.props.data.id;
   }
@@ -19,10 +20,10 @@ class Circle extends React.Component {
   }
 
   getClass () {
-    if (!this.state.user) {
-      return 'circle circle-default';
-    } else if (this.state.user === this.state.currentUser) {
+    if (this.state.user === this.state.currentUser) {
       return 'circle circle-mine';
+    } else if (!this.state.user) {
+      return 'circle circle-default';
     } else {
       return 'circle circle-taken';
     }
@@ -33,17 +34,17 @@ class Circle extends React.Component {
 
     if (this.state.user === this.state.currentUser) {
       newUser = '';
-      count = -1;
+      count = 1;
     } else if (this.state.user && this.state.user !== this.state.currentUser) {
       newUser = this.state.user;
       count = 0;
     } else {
       newUser = this.state.currentUser;
-      count = 1;
+      count = -1;
     }
 
     this.setState({ user: newUser }, () => {
-      this.props.action(this, count); // Update board
+      this.props.updateBoard(this, count); // Update board
     })
   }
 

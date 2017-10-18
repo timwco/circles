@@ -1,14 +1,17 @@
 import React from 'react';
 
-import { loadGame } from '../helpers/getBoard';
+import { loadGame } from '../helpers/connection';
 import { Board } from './board';
 
 class App extends React.Component {
 
+  // Game State
   state = { io: null, board: {} };
 
   constructor () {
     super();
+    // Listenting for initial loading of game
+    // Gets the board and a socket id to be used as our user's id
     loadGame(data => this.setState({ io: data.gameId, board: data.board }));
   }
 
