@@ -30,22 +30,8 @@ class Circle extends React.Component {
   }
 
   toggle () {
-    let newUser, count;
-
-    if (this.state.user === this.state.currentUser) {
-      newUser = '';
-      count = 1;
-    } else if (this.state.user && this.state.user !== this.state.currentUser) {
-      newUser = this.state.user;
-      count = 0;
-    } else {
-      newUser = this.state.currentUser;
-      count = -1;
-    }
-
-    this.setState({ user: newUser }, () => {
-      this.props.updateBoard(this, count); // Update board
-    })
+    // Updates our game board
+    this.props.updateBoard(this);
   }
 
   render () {

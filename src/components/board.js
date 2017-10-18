@@ -56,11 +56,26 @@ class Board extends React.Component {
 
   // Triggered when a user clicks a circle
   // updates the board and sends it to the server
-  updateBoard (card, count) {
-    let elem = _.find(this.state.board.display, { id: card.state.id })
-    elem.user = card.state.user;
-    sendBoard(this.state.board);
-    this.updatePlays(count);
+  updateBoard (card) {
+    let updatedUser;
+
+    if (this.state.plays > 0 || card.state.currentUser === card.state.user) {
+      if (card.state.user === card.state.currentUser) {
+        updatedUser = '';
+        this.updatePlays(1);
+      } else if (card.state.user && card.state.user !== card.state.currentUser) {
+        updatedUser = card.state.user;
+        this.updatePlays(0);
+      } else {
+        updatedUser = card.state.currentUser;
+        this.updatePlays(-1);
+      }
+
+      let elem = _.find(this.state.board.display, { id: card.state.id })
+      elem.user = updatedUser;
+      sendBoard(this.state.board);
+    }
+
   }
 
   // Method to update the circles view
@@ -81,8 +96,9 @@ class Board extends React.Component {
     return (
       <div className="board">
         <Stats data={ this.state }/>
-        <hr />
-        { this.renderCircles() }
+        <div className="playfield">
+          { this.renderCircles() }
+        </div>
       </div>
     );
   }

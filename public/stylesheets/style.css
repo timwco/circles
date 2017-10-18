@@ -7,14 +7,61 @@ a {
   color: #00B7FF;
 }
 
+.circles-app {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.play-count {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  padding: 10px;
+}
+
+.playfield {
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+  width: 800px;
+}
+
+.circles-stats {
+  margin-bottom: 15px;
+}
+
 .circle {
   width: 15px;
   height: 15px;
   border-radius: 50em;
-  display: inline-block;
   margin: 0 5px 5px 0;
   cursor: pointer;
+  display: flex;
 }
 .circle-default { background-color: rgba(222, 220, 222, 1.000); }
 .circle-mine { background-color: rgba(40, 100, 153, 1.000); }
 .circle-taken { background-color: rgba(96, 192, 219, 1.000); cursor: default; }
+
+.legend {
+  margin-top: 10px;
+}
+.demo {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 5px;
+  margin-right: 15px;
+  margin-top: 2px;
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 800px) {
+  .playfield {
+    width: 400px;
+  }
+}
+
+@media (max-width: 400px) {
+  .playfield {
+    width: 200px;
+  }
+}

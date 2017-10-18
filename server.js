@@ -33,15 +33,13 @@ let currentBoard;
 app.get('*', (req, res) => res.render('index'));
 
 // Set Up Socket Connection & Listens and Broadcasts
+// Checks for board on server, if none, creates one
+// sends the initial game state with socket connection to the front-end
+// listenes for a board update, updates the server state and sends back to front-end
 io.on('connection', (socket) => {
-  console.log('>------------- SOCKET ID', socket.id);
   currentBoard = (currentBoard !== undefined) ? currentBoard : newBoard;
-  console.log('>------ Client connected, BOARD ID:', currentBoard.id);
   io.emit('game', { board: currentBoard, gameId: socket.id });
   socket.on('sendBoard', board => {
-    console.log('=======================================')
-    console.log(board)
-    console.log('=======================================')
     io.emit('board', board);
     currentBoard = board;
   })

@@ -19,7 +19,6 @@ class App extends React.Component {
     return (
       <div className="circles-app">
         <h1>Welcome to Circles</h1>
-        <hr />
         <Board io={ this.state.io } board={ this.state.board } />
       </div>
     );

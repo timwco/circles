@@ -2622,7 +2622,37 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 24 */,
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return loadGame; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getBoard; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return sendBoard; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_socket_io_client__);
+
+
+
+const socket = __WEBPACK_IMPORTED_MODULE_1_socket_io_client___default()();
+
+function loadGame(cb) {
+  socket.on('game', data => cb(data));
+}
+
+function getBoard(cb) {
+  socket.on('board', board => cb(board));
+}
+
+function sendBoard(board) {
+  socket.emit('sendBoard', board);
+}
+
+
+
+/***/ }),
 /* 25 */
 /***/ (function(module, exports) {
 
@@ -24483,7 +24513,7 @@ module.exports = function() {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return App; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_connection__ = __webpack_require__(82);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_connection__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__board__ = __webpack_require__(76);
 
 
@@ -24512,7 +24542,6 @@ class App extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
         null,
         'Welcome to Circles'
       ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('hr', null),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__board__["a" /* Board */], { io: this.state.io, board: this.state.board })
     );
   }
@@ -27617,7 +27646,7 @@ Backoff.prototype.setJitter = function(jitter){
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__(79);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__circle__ = __webpack_require__(80);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_connection__ = __webpack_require__(82);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helpers_connection__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stats__ = __webpack_require__(81);
 
 
@@ -27678,11 +27707,25 @@ class Board extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
   // Triggered when a user clicks a circle
   // updates the board and sends it to the server
-  updateBoard(card, count) {
-    let elem = __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.find(this.state.board.display, { id: card.state.id });
-    elem.user = card.state.user;
-    Object(__WEBPACK_IMPORTED_MODULE_4__helpers_connection__["c" /* sendBoard */])(this.state.board);
-    this.updatePlays(count);
+  updateBoard(card) {
+    let updatedUser;
+
+    if (this.state.plays > 0 || card.state.currentUser === card.state.user) {
+      if (card.state.user === card.state.currentUser) {
+        updatedUser = '';
+        this.updatePlays(1);
+      } else if (card.state.user && card.state.user !== card.state.currentUser) {
+        updatedUser = card.state.user;
+        this.updatePlays(0);
+      } else {
+        updatedUser = card.state.currentUser;
+        this.updatePlays(-1);
+      }
+
+      let elem = __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.find(this.state.board.display, { id: card.state.id });
+      elem.user = updatedUser;
+      Object(__WEBPACK_IMPORTED_MODULE_4__helpers_connection__["c" /* sendBoard */])(this.state.board);
+    }
   }
 
   // Method to update the circles view
@@ -27704,8 +27747,11 @@ class Board extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
       'div',
       { className: 'board' },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__stats__["a" /* Stats */], { data: this.state }),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('hr', null),
-      this.renderCircles()
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'playfield' },
+        this.renderCircles()
+      )
     );
   }
 
@@ -45225,22 +45271,8 @@ class Circle extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
   }
 
   toggle() {
-    let newUser, count;
-
-    if (this.state.user === this.state.currentUser) {
-      newUser = '';
-      count = 1;
-    } else if (this.state.user && this.state.user !== this.state.currentUser) {
-      newUser = this.state.user;
-      count = 0;
-    } else {
-      newUser = this.state.currentUser;
-      count = -1;
-    }
-
-    this.setState({ user: newUser }, () => {
-      this.props.updateBoard(this, count); // Update board
-    });
+    // Updates our game board
+    this.props.updateBoard(this);
   }
 
   render() {
@@ -45274,51 +45306,24 @@ class Stats extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
       "div",
       { className: "circles-stats" },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "p",
-        null,
-        "User: ",
-        this.props.data.userId
-      ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "p",
+        "div",
         { className: "play-count" },
         "Remaining Plays: ",
-        this.props.data.plays
+        this.props.data.plays,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          "div",
+          { className: "legend" },
+          "Available ",
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("div", { className: "circle demo circle-default" }),
+          "Unavailable ",
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("div", { className: "circle demo circle-taken" }),
+          "Owned ",
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("div", { className: "circle demo circle-mine" })
+        )
       )
     );
   }
 
-}
-
-
-
-/***/ }),
-/* 82 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return loadGame; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getBoard; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return sendBoard; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client__ = __webpack_require__(56);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_socket_io_client___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_socket_io_client__);
-
-
-
-const socket = __WEBPACK_IMPORTED_MODULE_1_socket_io_client___default()();
-
-function loadGame(cb) {
-  socket.on('game', data => cb(data));
-}
-
-function getBoard(cb) {
-  socket.on('board', board => cb(board));
-}
-
-function sendBoard(board) {
-  socket.emit('sendBoard', board);
 }
 
 
