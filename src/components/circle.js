@@ -2,10 +2,12 @@ import React from 'react';
 
 class Circle extends React.Component {
 
-  state = { taken: false, mine: false, cName: 'circle circle-default' }
+  state = { id: 0, taken: false, mine: false, cName: 'circle circle-default' }
 
-  constructor () {
-    super();
+  constructor (props) {
+    super(props);
+    this.state.taken = this.props.cData.user ? true : false;
+    this.state.id = this.props.cData.id;
   }
 
   toggle () {
@@ -14,12 +16,13 @@ class Circle extends React.Component {
     } else if (!this.state.taken){
       this.setState({ cName: 'circle circle-mine', mine: true });
     }
+    this.props.action(this); // Update board
   }
 
   render () {
     return (
-      <div 
-        className={ this.state.cName } 
+      <div
+        className={ this.state.cName }
         onClick={ this.toggle.bind(this) }>
       </div>
     );

@@ -36,8 +36,12 @@ app.get('*', (req, res) => res.render('index'));
 io.on('connection', (socket) => {
   board = (board !== undefined) ? board : newBoard;
   console.log('>------ Client connected, BOARD ID:', board.id);
-  io.emit('time', new Date().toTimeString());
   io.emit('board', board);
+  socket.on('updateBoard', board => {
+    console.log('=======================================')
+    console.log(board)
+    console.log('=======================================')
+  })
   socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
